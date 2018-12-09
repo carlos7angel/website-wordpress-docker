@@ -1,4 +1,4 @@
-version: '1.0'
+version: '3.1'
 
 services:
 
@@ -6,42 +6,41 @@ services:
     depends_on:
       - mysql-db
     image: wordpress:4.9.8-php7.2-apache
-    #network_mode: bridge
-    #networks:
-    #  - wp-network-pdge
+    network_mode: bridge
     container_name: wordpress-cont-pgde
     restart: always
     ports:
       - 8088:80
     volumes:
-      - ./wp-content:/var/www/html/wp-content
-      - ./apache_config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+      - .:/var/www/html
+      - ./config_srv/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     links:
       - mysql-db
     environment:
-      WORDPRESS_DB_HOST: mysql-db
+      WORDPRESS_DB_HOST: mysql-db:3306
       WORDPRESS_DB_USER: plandeempleo
       WORDPRESS_DB_PASSWORD: Pl4nd33mpl30
-      WORDPRESS_DB_NAME: plandeempleo_db_websitewp
+      WORDPRESS_DB_NAME: plandeempleo_db
+      WORDPRESS_TABLE_PREFIX: pgd3_
 
   mysql-db:
-    image: mariadb:10
-    #network_mode: bridge
-    #networks:
-    #  - wp-network-pdge
-    container_name: wordpress-test-db-01
+    image: mariadb:10.3
+    network_mode: bridge   
+    container_name: mysqldb-cont-pgde
     restart: always
     ports:
       - 3307:3306
     volumes:
-      - ./database-data:/var/lib/mysql
+      - ./database:/var/lib/mysql
+    user: "1000:50"
     environment:
-      MYSQL_ROOT_PASSWORD: SRVdbPe3
-      MYSQL_DATABASE: plandeempleo_db_websitewp
+      MYSQL_ROOT_PASSWORD: SRVdbPgd3*18
+      MYSQL_DATABASE: plandeempleo_db
       MYSQL_USER: plandeempleo
       MYSQL_PASSWORD: Pl4nd33mpl30
+    command: mysqld --innodb-flush-method=littlesync --innodb-use-native-aio=OFF --log_bin=ON
 
 networks:
   default:
     external:
-      name: wp-network-pdge
+      name: wp-network-pgde
