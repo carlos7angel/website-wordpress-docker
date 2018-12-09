@@ -1,0 +1,47 @@
+version: '1.0'
+
+services:
+
+  wordpress:
+    depends_on:
+      - mysql-db
+    image: wordpress:4.9.8-php7.2-apache
+    #network_mode: bridge
+    #networks:
+    #  - wp-network-pdge
+    container_name: wordpress-cont-pgde
+    restart: always
+    ports:
+      - 8088:80
+    volumes:
+      - ./wp-content:/var/www/html/wp-content
+      - ./apache_config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    links:
+      - mysql-db
+    environment:
+      WORDPRESS_DB_HOST: mysql-db
+      WORDPRESS_DB_USER: plandeempleo
+      WORDPRESS_DB_PASSWORD: Pl4nd33mpl30
+      WORDPRESS_DB_NAME: plandeempleo_db_websitewp
+
+  mysql-db:
+    image: mariadb:10
+    #network_mode: bridge
+    #networks:
+    #  - wp-network-pdge
+    container_name: wordpress-test-db-01
+    restart: always
+    ports:
+      - 3307:3306
+    volumes:
+      - ./database-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: SRVdbPe3
+      MYSQL_DATABASE: plandeempleo_db_websitewp
+      MYSQL_USER: plandeempleo
+      MYSQL_PASSWORD: Pl4nd33mpl30
+
+networks:
+  default:
+    external:
+      name: wp-network-pdge
